@@ -11,7 +11,7 @@ class PairedImageDatasetFromCSV(Dataset):
         :param dataset_dir: Путь к таблицам с метаданными (пути к файлам, ошибка регистрации, класс)
         """
         super().__init__()
-        self.base_dir = "./"  # path to folder with data
+        self.base_dir = "./" 
         self.dataset_path = dataset_path
         self.annotations = pd.read_csv(self.dataset_path)
 

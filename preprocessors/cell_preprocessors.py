@@ -10,7 +10,7 @@ class CellImagePreprocessor(ABC):
         pass
 
 
-class FunctionPreprocessor(CellImagePreprocessor):
+class LambdaPreprocessor(CellImagePreprocessor):
     def __init__(self, fn: Callable[[Any], Any]):
         self.fn = fn
 
@@ -27,7 +27,6 @@ class TresholdBinarizationProcessor(CellImagePreprocessor):
         self.buffer = buffer
 
     def __call__(self, image):
-        # If RGB / RGBA → grayscale
         if len(image.shape) == 3:
             image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
 
@@ -59,7 +58,6 @@ class SmoothingPreprocessor(CellImagePreprocessor):
         
         match self.method:
             case "gaussian":
-                # OpenCV-compatible sigma
                 sigma = 0.3 * ((self.kernel_size - 1) * 0.5 - 1) + 0.8
         
                 radius = (self.kernel_size - 1) // 2
@@ -124,12 +122,10 @@ class ClahePreprocessor(CellImagePreprocessor):
             img = img.astype(np.uint8)
 
         if img.ndim == 3:
-            # RGB
             lab = cv2.cvtColor(img, cv2.COLOR_RGB2LAB)
             lab[..., 0] = self._clahe.apply(lab[..., 0])
             return cv2.cvtColor(lab, cv2.COLOR_LAB2RGB)
 
-        # Grayscale
         return self._clahe.apply(img)
 
 class CellPreprocessingPipeline:

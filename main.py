@@ -11,10 +11,13 @@ def main(cfg: DictConfig):
     dataset.apply_preprocessor(preprocessor)
 
     metric = instantiate(cfg.metric)
+    
+    # Тут еще продумать что отдавать вместо двух списков. Возможно словарь.
+    # Если в словаре будет много ключей -- подумать как обработать все и сразу 
+    # + Добавить по итогу отфильтрованные айдишники картинок 
     metric_scores, gt_scores = metric.compute_scores(dataset)
-
+    
     evaluator = instantiate(cfg.evaluator)
-
     results = evaluator(metric_scores, gt_scores)
     print("Evaluation results:", results)
 
