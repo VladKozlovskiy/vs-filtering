@@ -1,8 +1,9 @@
 import cv2
 import numpy as np
+from scipy.ndimage import gaussian_filter, median_filter
 from abc import ABC, abstractmethod
 from typing import Iterable, List, Any, Callable, Optional, Tuple
-
+import torch
 
 class CellImagePreprocessor(ABC):
     @abstractmethod
@@ -18,9 +19,6 @@ class LambdaPreprocessor(CellImagePreprocessor):
         return self.fn(image)
 
 class TresholdBinarizationProcessor(CellImagePreprocessor):
-    """
-    Create a binary mask where non-white pixels are 1, and white pixels are 0.
-    """
     def __init__(self, threshold=None, percentile=80, buffer=5):
         self.threshold = threshold
         self.percentile = percentile
@@ -88,17 +86,6 @@ class SmoothingPreprocessor(CellImagePreprocessor):
                 raise ValueError("Invalid method. Choose 'gaussian' or 'median'.")
 
 class ClahePreprocessor(CellImagePreprocessor):
-    """
-    CLAHE preprocessor.
-
-    Expected input:
-        - (H, W) or (H, W, 3)
-        - uint8 or float in [0, 255]
-
-    IMPORTANT:
-        Normalization to [0, 1] MUST be applied after CLAHE.
-    """
-
     def __init__(self, clip_limit=2.0, tile_grid_size=(8, 8)):
         self._clahe = cv2.createCLAHE(
             clipLimit=clip_limit,
@@ -136,3 +123,19 @@ class CellPreprocessingPipeline:
         for preprocessor in self.preprocessors:
             image = preprocessor(image)
         return image
+
+class ToTensor(CellImagePreprocessor):
+    def __call__(self, image: Any) -> torch.Tensor:
+        if not isinstance(image, np.ndarray):
+            image = np.array(image)
+        
+        # Добавляем канал если изображение 2D
+        if image.ndim == 2:
+            image = image[np.newaxis, ...]  # (1, H, W)
+        elif image.ndim == 3:
+            image = image.transpose((2, 0, 1))  # (C, H, W)
+        else:
+            raise ValueError(f"Unsupported image shape: {image.shape}. Expected 2D (H, W) or 3D (H, W, C)")
+        
+        image = image.astype(np.float32)
+        return torch.from_numpy(image)

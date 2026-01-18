@@ -1,0 +1,16 @@
+seed: 42
+
+dataset:
+  _target_: datasets.datasets.PairedImageDatasetFromCSV
+  dataset_path: "./data/old_ds/annotations_df.csv"
+
+preprocessor:
+  _target_: preprocessors.cell_preprocessors.CellPreprocessingPipeline
+  preprocessors:
+    - _target_: preprocessors.cell_preprocessors.ToTensor
+
+metric:
+  _target_: metrics.main.CellPoseSimilarityEstimator
+
+evaluator:
+  _target_: evaluators.evaluators.AUCEvaluator

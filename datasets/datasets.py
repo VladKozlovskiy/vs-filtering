@@ -11,7 +11,7 @@ class PairedImageDatasetFromCSV(Dataset):
         :param dataset_dir: Путь к таблицам с метаданными (пути к файлам, ошибка регистрации, класс)
         """
         super().__init__()
-        self.base_dir = "./" 
+        self.base_dir = "./data/old_ds/"
         self.dataset_path = dataset_path
         self.annotations = pd.read_csv(self.dataset_path)
 
@@ -28,4 +28,9 @@ class PairedImageDatasetFromCSV(Dataset):
         f_patch = np.array(Image.open(fixed_path).convert("RGB"))
         w_patch = np.array(Image.open(warped_path).convert("RGB"))
 
+        if hasattr(self, 'preprocessor'):
+            return self.preprocessor(f_patch), self.preprocessor(w_patch), dist, target
         return f_patch, w_patch, dist, target
+
+    def apply_preprocessor(self, preprocessor):
+        self.preprocessor = preprocessor
