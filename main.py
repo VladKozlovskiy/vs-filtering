@@ -15,14 +15,14 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-@hydra.main(version_base=None, config_path="configs", config_name="main")
+@hydra.main(version_base=None, config_path="configs", config_name="cellpose_dist")
 def main(cfg: DictConfig) -> None:
     seed = cfg.get('seed', 42)
     seed_everything(seed, workers=True)
     
     logger.info("Experiment configuration:")
     logger.info(OmegaConf.to_yaml(cfg))
-    
+
     output_dir = Path(HydraConfig.get().runtime.output_dir)
     logger.info(f"Output directory: {output_dir}")
     
@@ -35,12 +35,12 @@ def main(cfg: DictConfig) -> None:
     
     metric = instantiate(cfg.metric)
     logger.info(f"Using metric: {metric.__class__.__name__}")
-    
+
     logger.info("Computing similarity scores...")
     predicted_similarities = metric.compute_scores(dataset)
     logger.info(f"Computed similarities for {len(predicted_similarities)} metrics")
     
-    gt_similarities = [item for _, _, _, item in dataset]
+    gt_similarities = [item for _, _, item in dataset]
     logger.info(f"Collected {len(gt_similarities)} ground truth labels")
     
     evaluator = instantiate(cfg.evaluator)

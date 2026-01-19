@@ -30,7 +30,7 @@ class LambdaSimilarityEstimator(BaseSimilarityEstimator):
     
     def compute_scores(self, dataset: Dataset) -> Dict[str, List[float]]:
         scores = []
-        for f_patch, w_patch, dist, target in tqdm(dataset, desc=self.name):
+        for f_patch, w_patch, target in tqdm(dataset, desc=self.name):
             try:
                 score = self.fn(f_patch, w_patch)
                 scores.append(float(score))
@@ -52,7 +52,7 @@ class LPIPSSimilarityEstimator(BaseSimilarityEstimator):
     def compute_scores(self, dataset: Dataset) -> Dict[str, List[float]]:
         """Вычисляет LPIPS метрики схожести."""
         scores = []
-        for f_patch, w_patch, dist, target in tqdm(dataset, desc=self.name):
+        for f_patch, w_patch, target in tqdm(dataset, desc=self.name):
             try:
                 # Конвертируем в тензоры если нужно
                 if not isinstance(f_patch, torch.Tensor):
@@ -114,20 +114,8 @@ class CellPoseSimilarityEstimator(BaseSimilarityEstimator):
             with torch.inference_mode():
                 for batch_idx, batch in enumerate(tqdm(loader, desc=self.name)):
                     try:
-                        batch_he, batch_ihc, dist, target = batch
-                        
-                        # Конвертируем в тензоры и перемещаем на устройство
-                        if not isinstance(batch_he, torch.Tensor):
-                            batch_he = torch.stack([torch.from_numpy(x) if isinstance(x, np.ndarray) else torch.tensor(x) for x in batch_he])
-                        if not isinstance(batch_ihc, torch.Tensor):
-                            batch_ihc = torch.stack([torch.from_numpy(x) if isinstance(x, np.ndarray) else torch.tensor(x) for x in batch_ihc])
-                        
-                        # Нормализуем если нужно (ожидается [0, 255] или [0, 1])
-                        if batch_he.max() > 1.0:
-                            batch_he = batch_he / 255.0
-                        if batch_ihc.max() > 1.0:
-                            batch_ihc = batch_ihc / 255.0
-                        
+                        batch_he, batch_ihc, target = batch
+
                         in0 = batch_he.to(self.device).to(torch.bfloat16)
                         in1 = batch_ihc.to(self.device).to(torch.bfloat16)
                         

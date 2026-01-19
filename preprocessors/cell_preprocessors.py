@@ -124,6 +124,45 @@ class CellPreprocessingPipeline:
             image = preprocessor(image)
         return image
 
+class MinMaxNormalizer(CellImagePreprocessor):
+    """
+    Min-Max нормализация для произвольных изображений.
+    Нормализует значения изображения в диапазон [0, 1] используя min-max нормализацию.
+    Сохраняет исходную структуру изображения (2D или 3D).
+    """
+    
+    def __init__(self, eps: float = 1e-20):
+        """
+        Args:
+            eps: малое значение для предотвращения деления на ноль
+        """
+        self.eps = eps
+    
+    def __call__(self, image: Any) -> np.ndarray:
+        """
+        Нормализует изображение min-max нормализацией.
+        
+        Args:
+            image: изображение (numpy array) - 2D (H, W) или 3D (H, W, C) или (C, H, W)
+            
+        Returns:
+            нормализованное изображение в том же формате, что и входное, значения в [0, 1]
+        """
+        if not isinstance(image, np.ndarray):
+            image = np.array(image)
+        
+        # Конвертируем в float32
+        img = image.astype(np.float32)
+        
+        # Min-max нормализация
+        img_min = img.min()
+        img_max = img.max()
+        img = img - img_min
+        img = img / (img_max - img_min + self.eps)
+        
+        return img
+
+
 class ToTensor(CellImagePreprocessor):
     def __call__(self, image: Any) -> torch.Tensor:
         if not isinstance(image, np.ndarray):

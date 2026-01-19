@@ -1,0 +1,22 @@
+seed: 42
+
+dataset:
+  _target_: datasets.paired_image_dataset.PairedImageDatasetFromCSV
+  base_dir: "./data/old_ds/"
+  annotation_path : "annotations_df.csv"
+  label_column: "class"
+  
+preprocessor:
+  _target_: preprocessors.cell_preprocessors.CellPreprocessingPipeline
+  preprocessors:
+    - _target_: preprocessors.cell_preprocessors.MinMaxNormalizer
+    - _target_: preprocessors.cell_preprocessors.ToTensor
+
+metric:
+  _target_: metrics.similarity_estimators.CellPoseSimilarityEstimator
+
+evaluator:
+  _target_: evaluators.quality_evaluators.SequencialScoreEvaluator
+  evaluators:
+    - _target_: evaluators.quality_evaluators.AUCEvaluator
+    - _target_: evaluators.quality_evaluators.MeanRecallEvaluator

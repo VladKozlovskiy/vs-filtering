@@ -1,0 +1,35 @@
+seed: 42
+
+dataset:
+  _target_: datasets.paired_image_dataset.PairedImageDatasetFromCSV
+  base_dir: "./data/old_ds/"
+  annotation_path : "annotations_df.csv"
+  label_column: "dist"
+  
+preprocessor:
+  _target_: preprocessors.cell_preprocessors.CellPreprocessingPipeline
+  preprocessors:
+    - _target_: preprocessors.cell_preprocessors.MinMaxNormalizer
+    - _target_: preprocessors.cell_preprocessors.ToTensor
+
+metric:
+  _target_: metrics.similarity_estimators.CellPoseSimilarityEstimator
+
+evaluator:
+  _target_: evaluators.quality_evaluators.SequencialScoreEvaluator
+  evaluators:
+    - _target_: evaluators.quality_evaluators.LambdaQualityEvaluator
+      fn:
+        _target_: evaluators.quality_evaluators.pearson_corr
+        _partial_: true
+      name: Pearson
+    - _target_: evaluators.quality_evaluators.LambdaQualityEvaluator
+      fn:
+        _target_: evaluators.quality_evaluators.spearman_corr
+        _partial_: true
+      name: Spearman
+    - _target_: evaluators.quality_evaluators.LambdaQualityEvaluator
+      fn:
+        _target_: evaluators.quality_evaluators.kendall_corr
+        _partial_: true
+      name: Kendall
