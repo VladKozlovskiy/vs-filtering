@@ -7,10 +7,14 @@ dataset:
   label_column: "class"
   
 preprocessor:
-  _target_: preprocessors.cell_preprocessors.CellPreprocessingPipeline
+  _target_: preprocessors.paired_preprocessors.PairedCellPreprocessingPipeline
   preprocessors:
-    - _target_: preprocessors.cell_preprocessors.MinMaxNormalizer
-    - _target_: preprocessors.cell_preprocessors.ToTensor
+    - _target_: preprocessors.paired_preprocessors.PairedFromSingle
+      preprocessor:
+        _target_: preprocessors.cell_preprocessors.MinMaxNormalizer
+    - _target_: preprocessors.paired_preprocessors.PairedFromSingle
+      preprocessor:
+        _target_: preprocessors.cell_preprocessors.ToTensor
 
 metric:
   _target_: metrics.similarity_estimators.CellPoseSimilarityEstimator

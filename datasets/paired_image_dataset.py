@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from PIL import Image
 from torch.utils.data import  Dataset
+from preprocessors.paired_preprocessors import PairedCellImagePreprocessor
 
 
 class PairedImageDatasetFromCSV(Dataset):
@@ -31,8 +32,14 @@ class PairedImageDatasetFromCSV(Dataset):
         w_patch = np.array(Image.open(warped_path).convert("RGB"))
 
         if hasattr(self, 'preprocessor'):
-            return self.preprocessor(f_patch), self.preprocessor(w_patch), target
+            f_patch, w_patch = self.preprocessor(f_patch, w_patch)
+            return f_patch, w_patch, target
         return f_patch, w_patch, target
 
     def apply_preprocessor(self, preprocessor):
+        if not isinstance(preprocessor, PairedCellImagePreprocessor):
+            raise TypeError(
+                "Expected PairedCellImagePreprocessor for paired dataset, "
+                f"got {type(preprocessor).__name__}"
+            )
         self.preprocessor = preprocessor
