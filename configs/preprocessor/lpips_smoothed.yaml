@@ -1,0 +1,10 @@
+# LPIPS + Gaussian smoothing
+_target_: preprocessors.paired_preprocessors.PairedCellPreprocessingPipeline
+preprocessors:
+  - _target_: preprocessors.cell_preprocessors.ToRGB
+  - _target_: preprocessors.cell_preprocessors.MinMaxNormalizer
+  - _target_: preprocessors.cell_preprocessors.SmoothingPreprocessor
+    method: gaussian
+    kernel_size: 5
+  - _target_: preprocessors.cell_preprocessors.ScaleToMinusOneOne
+  - _target_: preprocessors.cell_preprocessors.ToTensor

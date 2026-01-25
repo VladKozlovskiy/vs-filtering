@@ -1,0 +1,8 @@
+# CellPose + Grayscale (replicated to 3 channels)
+_target_: preprocessors.paired_preprocessors.PairedCellPreprocessingPipeline
+preprocessors:
+  - _target_: preprocessors.cell_preprocessors.ToRGB
+  - _target_: preprocessors.cell_preprocessors.ToGrayScale
+  - _target_: preprocessors.cell_preprocessors.MinMaxNormalizer
+  - _target_: preprocessors.cell_preprocessors.ToRGB
+  - _target_: preprocessors.cell_preprocessors.ToTensor

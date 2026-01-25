@@ -5,7 +5,7 @@
 import itertools
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -15,17 +15,17 @@ from sklearn.metrics import roc_auc_score
 logger = logging.getLogger(__name__)
 
 
-def pearson_corr(similarity_scores: List[float], labels: List[Any]) -> float:
+def pearson_corr(similarity_scores: list[float], labels: list[Any]) -> float:
     corr, _ = pearsonr(similarity_scores, labels)
     return float(corr)
 
 
-def spearman_corr(similarity_scores: List[float], labels: List[Any]) -> float:
+def spearman_corr(similarity_scores: list[float], labels: list[Any]) -> float:
     corr, _ = spearmanr(similarity_scores, labels)
     return float(corr)
 
 
-def kendall_corr(similarity_scores: List[float], labels: List[Any]) -> float:
+def kendall_corr(similarity_scores: list[float], labels: list[Any]) -> float:
     corr, _ = kendalltau(similarity_scores, labels)
     return float(corr)
 
@@ -35,12 +35,12 @@ class BaseQualityEvaluator(ABC):
         self.name = name
 
     @abstractmethod
-    def compute_metric(self, similarity_scores: List[float], labels: List[Any]) -> Any:
+    def compute_metric(self, similarity_scores: list[float], labels: list[Any]) -> Any:
         pass
 
     def __call__(
-        self, similarity_scores: Dict[str, List[float]], labels: List[Any]
-    ) -> Dict[str, Any]:
+        self, similarity_scores: dict[str, list[float]], labels: list[Any]
+    ) -> dict[str, Any]:
         if len(labels) == 0:
             raise ValueError("Labels cannot be empty")
 
@@ -76,13 +76,12 @@ class LambdaQualityEvaluator(BaseQualityEvaluator, ABC):
 
 
 class AUCEvaluator(BaseQualityEvaluator):
-
     def __init__(self):
         super().__init__("MulticlassAUC")
 
     def compute_metric(
-        self, similarity_scores: List[float], labels: List[Any]
-    ) -> Dict[str, float]:
+        self, similarity_scores: list[float], labels: list[Any]
+    ) -> dict[str, float]:
         y_true = np.array(labels)
         y_score = np.array(similarity_scores, dtype=float)
 
@@ -373,8 +372,8 @@ class MeanRecallEvaluator(BaseQualityEvaluator):
         return t1, t2, best_mean_recall, best_recalls
 
     def compute_metric(
-        self, similarity_scores: List[float], labels: List[Any]
-    ) -> Dict[str, Any]:
+        self, similarity_scores: list[float], labels: list[Any]
+    ) -> dict[str, Any]:
         """
         Вычисляет оптимальные пороги и средний recall.
 

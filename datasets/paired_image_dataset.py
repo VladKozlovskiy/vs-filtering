@@ -34,12 +34,13 @@ class PairedImageDatasetFromCSV(Dataset):
         )
         target = row[self.label_column]
 
-        f_patch = np.array(Image.open(fixed_path).convert("RGB"))
-        w_patch = np.array(Image.open(warped_path).convert("RGB"))
+        # Загружаем и конвертируем в numpy сразу
+        f_patch = np.asarray(Image.open(fixed_path).convert("RGB"), dtype=np.uint8)
+        w_patch = np.asarray(Image.open(warped_path).convert("RGB"), dtype=np.uint8)
 
         if hasattr(self, "preprocessor"):
             f_patch, w_patch = self.preprocessor(f_patch, w_patch)
-            return f_patch, w_patch, target
+
         return f_patch, w_patch, target
 
     def apply_preprocessor(self, preprocessor):

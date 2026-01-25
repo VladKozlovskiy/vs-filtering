@@ -1,0 +1,17 @@
+_target_: evaluators.quality_evaluators.SequencialScoreEvaluator
+evaluators:
+  - _target_: evaluators.quality_evaluators.LambdaQualityEvaluator
+    fn:
+      _target_: evaluators.quality_evaluators.pearson_corr
+      _partial_: true
+    name: Pearson
+  - _target_: evaluators.quality_evaluators.LambdaQualityEvaluator
+    fn:
+      _target_: evaluators.quality_evaluators.spearman_corr
+      _partial_: true
+    name: Spearman
+  - _target_: evaluators.quality_evaluators.LambdaQualityEvaluator
+    fn:
+      _target_: evaluators.quality_evaluators.kendall_corr
+      _partial_: true
+    name: Kendall

@@ -1,0 +1,8 @@
+# LPIPS metric with VGG backbone
+# VGG typically gives higher quality but slower computation
+_target_: metrics.similarity_estimators.LPIPSSimilarityEstimator
+lpips_args:
+  net: vgg
+  spatial: false
+  version: "0.1"
+device: cuda

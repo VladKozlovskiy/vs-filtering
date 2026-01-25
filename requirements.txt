@@ -24,3 +24,10 @@ lpips>=0.1.4
 
 # Cell segmentation
 cellpose>=2.3.0
+
+# Utilities
+pytorch-lightning>=2.0.0
+
+# Development
+pre-commit>=3.6.0
+ruff>=0.1.9

@@ -5,12 +5,13 @@
 import logging
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple
+from collections.abc import Callable
+from typing import Any
 
 import numpy as np
 import torch
 import torch.nn.functional as F
-from cellpose import core, io, models, plot
+from cellpose import models
 from lpips import LPIPS
 from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
@@ -19,19 +20,17 @@ logger = logging.getLogger(__name__)
 
 
 class BaseSimilarityEstimator(ABC):
-
     @abstractmethod
-    def compute_scores(self, dataset: Dataset) -> Dict[str, List[float]]:
+    def compute_scores(self, dataset: Dataset) -> dict[str, list[float]]:
         pass
 
 
 class LambdaSimilarityEstimator(BaseSimilarityEstimator):
-
     def __init__(self, fn: Callable[[Any, Any], float], name: str):
         self.fn = fn
         self.name = name
 
-    def compute_scores(self, dataset: Dataset) -> Dict[str, List[float]]:
+    def compute_scores(self, dataset: Dataset) -> dict[str, list[float]]:
         scores = []
         for f_patch, w_patch, target in tqdm(dataset, desc=self.name):
             try:
@@ -44,8 +43,7 @@ class LambdaSimilarityEstimator(BaseSimilarityEstimator):
 
 
 class LPIPSSimilarityEstimator(BaseSimilarityEstimator):
-
-    def __init__(self, lpips_args: Dict[str, Any] = None, device: str = "cuda"):
+    def __init__(self, lpips_args: dict[str, Any] = None, device: str = "cuda"):
         if lpips_args is None:
             lpips_args = {}
         self.device = device
@@ -53,7 +51,7 @@ class LPIPSSimilarityEstimator(BaseSimilarityEstimator):
         self.name = "LPIPS"
         logger.info(f"Initialized LPIPS model on {device}")
 
-    def compute_scores(self, dataset: Dataset) -> Dict[str, List[float]]:
+    def compute_scores(self, dataset: Dataset) -> dict[str, list[float]]:
         """Вычисляет LPIPS метрики схожести."""
         scores = []
         for f_patch, w_patch, target in tqdm(dataset, desc=self.name):
@@ -91,7 +89,6 @@ class LPIPSSimilarityEstimator(BaseSimilarityEstimator):
 
 
 class CellPoseSimilarityEstimator(BaseSimilarityEstimator):
-
     def __init__(self, device: str = "cuda", batch_size: int = 16):
         self.device = device
         self.batch_size = batch_size
@@ -121,7 +118,7 @@ class CellPoseSimilarityEstimator(BaseSimilarityEstimator):
         im2 = F.normalize(im2, dim=1)
         return torch.norm(im1 - im2, dim=1)
 
-    def compute_scores(self, dataset: Dataset) -> Dict[str, List[float]]:
+    def compute_scores(self, dataset: Dataset) -> dict[str, list[float]]:
         encoder = self.model.net.encoder
         results = defaultdict(list)
         loader = DataLoader(

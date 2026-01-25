@@ -1,0 +1,8 @@
+# LPIPS metric with SqueezeNet backbone
+# Fastest but potentially lower quality
+_target_: metrics.similarity_estimators.LPIPSSimilarityEstimator
+lpips_args:
+  net: squeeze
+  spatial: false
+  version: "0.1"
+device: cuda

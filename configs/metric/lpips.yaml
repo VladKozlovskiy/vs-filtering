@@ -1,0 +1,8 @@
+# LPIPS (Learned Perceptual Image Patch Similarity) metric
+# Uses pretrained AlexNet by default for perceptual distance
+_target_: metrics.similarity_estimators.LPIPSSimilarityEstimator
+lpips_args:
+  net: alex  # Options: alex, vgg, squeeze
+  spatial: false
+  version: "0.1"
+device: cuda

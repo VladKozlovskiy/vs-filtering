@@ -1,0 +1,4 @@
+_target_: datasets.paired_image_dataset.PairedImageDatasetFromCSV
+base_dir: "./data/old_ds/"
+annotation_path: "annotations_df.csv"
+label_column: "dist"

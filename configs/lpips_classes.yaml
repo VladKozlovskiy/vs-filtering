@@ -1,7 +1,7 @@
 defaults:
   - dataset: paired_image_class
-  - preprocessor: paired_cell_pipeline
-  - metric: cellpose
+  - preprocessor: lpips_basic
+  - metric: lpips
   - evaluator: quality_auc_recall
   - _self_
 

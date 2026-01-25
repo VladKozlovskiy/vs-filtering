@@ -1,0 +1,22 @@
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
+    "E731",  # lambda assignment
+    "F403",  # import * used
+    "F405",  # may be undefined from import *
+    "UP007", # use X | Y instead of Optional (keep for py3.9 compat)
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["preprocessors", "metrics", "evaluators", "datasets", "utils"]

@@ -1,0 +1,8 @@
+defaults:
+  - dataset: paired_image_dist
+  - preprocessor: lpips_basic
+  - metric: lpips
+  - evaluator: quality_corrs
+  - _self_
+
+seed: 42

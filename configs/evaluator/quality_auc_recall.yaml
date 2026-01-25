@@ -1,0 +1,4 @@
+_target_: evaluators.quality_evaluators.SequencialScoreEvaluator
+evaluators:
+  - _target_: evaluators.quality_evaluators.AUCEvaluator
+  - _target_: evaluators.quality_evaluators.MeanRecallEvaluator
