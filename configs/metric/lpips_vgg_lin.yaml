@@ -1,0 +1,8 @@
+# LPIPS VGG with learned linear aggregation (default)
+_target_: metrics.similarity_estimators.LPIPSSimilarityEstimator
+lpips_args:
+  net: vgg
+  lpips: true  # lin aggregation (learned weights)
+  spatial: false
+  version: "0.1"
+device: cuda

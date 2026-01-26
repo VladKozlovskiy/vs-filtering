@@ -1,0 +1,8 @@
+# LPIPS VGG with average aggregation (not learned linear)
+_target_: metrics.similarity_estimators.LPIPSSimilarityEstimator
+lpips_args:
+  net: vgg
+  lpips: false  # avg aggregation
+  spatial: false
+  version: "0.1"
+device: cuda

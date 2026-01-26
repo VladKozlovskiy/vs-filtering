@@ -1,0 +1,11 @@
+# Fedor config 5: vgg_lin_rgb
+# normalization=True, rgb, flip=True, histmatch=True, clahe=False
+_target_: preprocessors.paired_preprocessors.PairedCellPreprocessingPipeline
+preprocessors:
+  - _target_: preprocessors.cell_preprocessors.ToRGB
+  - _target_: preprocessors.cell_preprocessors.MinMaxNormalizer
+  - _target_: preprocessors.cell_preprocessors.FlipIntensity
+  - _target_: preprocessors.paired_preprocessors.MatchHistograms
+    match_to: src
+  - _target_: preprocessors.cell_preprocessors.ScaleToMinusOneOne
+  - _target_: preprocessors.cell_preprocessors.ToTensor

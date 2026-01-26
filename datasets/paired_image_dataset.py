@@ -26,12 +26,8 @@ class PairedImageDatasetFromCSV(Dataset):
     def __getitem__(self, idx):
         row = self.annotations.iloc[idx]
 
-        fixed_path = os.path.join(
-            self.base_dir, row["fixed_path"].removeprefix("filtration_imgs/")
-        )
-        warped_path = os.path.join(
-            self.base_dir, row["warped_path"].removeprefix("filtration_imgs/")
-        )
+        fixed_path = os.path.join(self.base_dir, row["fixed_path"])
+        warped_path = os.path.join(self.base_dir, row["warped_path"])
         target = row[self.label_column]
 
         # Загружаем и конвертируем в numpy сразу

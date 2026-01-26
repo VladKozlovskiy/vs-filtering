@@ -1,0 +1,10 @@
+# Fedor config 2: alex_avg_rgb
+# normalization=False, rgb, flip=False, histmatch=True, clahe=False
+_target_: preprocessors.paired_preprocessors.PairedCellPreprocessingPipeline
+preprocessors:
+  - _target_: preprocessors.cell_preprocessors.ToRGB
+  - _target_: preprocessors.cell_preprocessors.MinMaxNormalizer
+  - _target_: preprocessors.paired_preprocessors.MatchHistograms
+    match_to: src
+  # no ScaleToMinusOneOne (normalization=False)
+  - _target_: preprocessors.cell_preprocessors.ToTensor
