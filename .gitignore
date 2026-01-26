@@ -14,5 +14,8 @@ Thumbs.db
 *.swp
 *.swo
 *.orig
-outputs
-data
+outputs/
+data/
+*.log
+multirun/
+.cursor/
