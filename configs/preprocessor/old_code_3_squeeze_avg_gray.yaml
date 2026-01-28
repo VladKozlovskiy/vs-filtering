@@ -1,16 +1,20 @@
-# Fedor config 3: squeeze_avg (gray)
-# normalization=True, gray, flip=True, histmatch=True, clahe=True
+# Config 3: squeeze_avg (gray)
+# Expected: normalization=True, gray, flip=True, histmatch=True, clahe=True
+# Order: normalize -> grayscale -> flip -> histmatch -> clahe -> scale -> tensor
 _target_: preprocessors.paired_preprocessors.PairedCellPreprocessingPipeline
 preprocessors:
+  - _target_: preprocessors.cell_preprocessors.ToRGB
+  - _target_: preprocessors.cell_preprocessors.MinMaxNormalizer
+    channel_wise: true
   - _target_: preprocessors.cell_preprocessors.ToGrayScale
+  - _target_: preprocessors.cell_preprocessors.FlipIntensity
+  - _target_: preprocessors.paired_preprocessors.MatchHistograms
+    match_to: src
   - _target_: preprocessors.cell_preprocessors.ToUint8
   - _target_: preprocessors.cell_preprocessors.ClahePreprocessor
     clip_limit: 2.0
     tile_grid_size: [8, 8]
-  - _target_: preprocessors.cell_preprocessors.MinMaxNormalizer
-  - _target_: preprocessors.cell_preprocessors.FlipIntensity
-  - _target_: preprocessors.paired_preprocessors.MatchHistograms
-    match_to: src
+  - _target_: preprocessors.cell_preprocessors.ToFloat
   - _target_: preprocessors.cell_preprocessors.ScaleToMinusOneOne
   - _target_: preprocessors.cell_preprocessors.ToRGB
   - _target_: preprocessors.cell_preprocessors.ToTensor

@@ -76,9 +76,30 @@ class ToUint8(CellImagePreprocessor):
 
         if img.dtype in (np.float32, np.float64):
             assert_range(img, 0.0, 1.0, "img (float)")
-            return (img * 255.0).round().astype(np.uint8)
+            return (np.clip(img, 0, 1) * 255.0).astype(np.uint8)
 
         raise ValueError(f"ToUint8 expects uint8 or float32/float64, got {img.dtype}")
+
+
+class ToFloat(CellImagePreprocessor):
+    # Input: uint8 in [0, 255] OR float32/float64 in any range
+    # Output: float32 in [0, 1]
+    # Просто делит на 255 без min-max нормализации
+
+    def __call__(self, img: np.ndarray) -> np.ndarray:
+        assert_ndarray(img, "img")
+        assert_ndim(img, (2, 3), "img")
+
+        if img.dtype == np.uint8:
+            return img.astype(np.float32) / 255.0
+
+        if img.dtype in (np.float32, np.float64):
+            # Если уже float и > 1, предполагаем [0, 255] диапазон
+            if img.max() > 1.0:
+                return img.astype(np.float32) / 255.0
+            return img.astype(np.float32)
+
+        raise ValueError(f"ToFloat expects uint8 or float32/float64, got {img.dtype}")
 
 
 class ToTensor(CellImagePreprocessor):
@@ -105,17 +126,26 @@ class MinMaxNormalizer(CellImagePreprocessor):
     # Input: any dtype, any range
     # Output: float32 in [0, 1]
 
-    def __init__(self, eps: float = 1e-20):
+    def __init__(self, eps: float = 1e-20, channel_wise: bool = False):
         assert eps > 0, f"eps must be positive, got {eps}"
         self.eps = eps
+        self.channel_wise = channel_wise
 
     def __call__(self, image: np.ndarray) -> np.ndarray:
         assert_ndarray(image, "image")
         assert_ndim(image, (2, 3), "image")
 
         img = image.astype(np.float32)
-        img_min = img.min()
-        img_max = img.max()
+
+        if self.channel_wise and img.ndim == 3:
+            # Channel-wise min-max: каждый канал нормализуется независимо
+            img_min = img.min(axis=(0, 1), keepdims=True)
+            img_max = img.max(axis=(0, 1), keepdims=True)
+        else:
+            # Global min-max: один min/max на всё изображение
+            img_min = img.min()
+            img_max = img.max()
+
         return (img - img_min) / (img_max - img_min + self.eps)
 
 
